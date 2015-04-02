@@ -1,0 +1,130 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <title>Web Workers example</title>
+    <style>
+      body {
+        margin: 5px;
+      }
+      .half {
+        width: 50%;
+        float: left;
+      }
+      #pic {
+        max-width: 300px;
+        max-height: 300px;
+        width: 40vw;
+        height: 40vw;
+      }
+      .box {
+        display: inline-block;
+        border: solid 1px black;  
+        margin: 10px;
+        height: 30px;
+        padding: 5px;
+        background-color: #DDD;
+      }
+      #image {
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="half" id="animation">
+      <script>
+        var canvas, context;
+
+        init();
+        animate();
+        // setInterval(animate, 16);
+
+        function init() {
+          canvas = document.createElement( 'canvas' );
+          canvas.width = 400;
+          canvas.height = 300;
+          context = canvas.getContext( '2d' );
+          document.querySelector('#animation').appendChild( canvas );
+        }
+
+        function clear() {
+          context.clearRect ( 0 , 0 , canvas.width, canvas.height );
+          context.fill();
+        }
+
+        function animate() {
+          requestAnimationFrame( animate );
+          drawTime();
+        }
+
+        var lastTime;
+
+        function drawTime() {
+          // check if ms diff > 17ms, if so, display diff on canvas, fade it out a second later.
+
+          var days = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+          ]
+
+          var months = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+          ]
+
+
+          var now = new Date(Date.now());
+
+          var year = now.getYear();
+          var month = now.getMonth();
+          var date = now.getDate();
+          var day = now.getDay();
+          var hours = now.getHours();
+          var mins = now.getMinutes();
+          var secs = now.getSeconds();
+          var ms = now.getMilliseconds();
+
+          var dateString = days[day] + ", " + date + " " + months[month] + " " + parseInt(1900 + year);
+
+          var timeString = hours + ":" + mins + ":" + secs + ":" + ms;
+
+          var frameTimeDiff = now - lastTime;
+
+          context.font = "36px serif";
+
+          if (frameTimeDiff > 50) {
+            context.clearRect(0,0, canvas.width, canvas.height);
+            context.fillText("Jank spotted: " + frameTimeDiff + "ms", 20, 50);
+          } else {
+            context.clearRect(20,60,canvas.width, canvas.height);
+          }
+
+          context.fillText(dateString, 20, 100);
+          context.fillText(timeString, 20, 150);
+
+          lastTime = now;
+        };
+      </script>
+    </div>
+    <div class="half" id="image-manipulator">
+      <input type="file" id="imageLoader" name="imageLoader"/>
+      <button id="invert">Invert</button>
+      <canvas id="image"></canvas>
+    </div>
+    <script src='scripts/invertColor.js'></script>
+  </body>
+</html>

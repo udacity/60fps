@@ -1,0 +1,141 @@
+<!DOCTYPE HTML>
+
+<!--
+Canvas inspired by Mr. Doob's example:
+http://mrdoob.com/lab/javascript/requestanimationframe/
+-->
+
+<!--
+
+  IDEAS:
+    * line up animation and image side by side
+    * controls for the image manipulation
+    * turn the circle into a 5 second clock. use hands.
+    * ability to upload image
+
+-->
+
+<html lang="en">
+  <head>
+    <title>Web Workers example</title>
+    <script src='CamanJS-4.1.1/dist/caman.full.min.js'></script>
+    <style>
+      body {
+        width: 100vw;
+      }
+      .half {
+        width: 50%;
+        float: left;
+      }
+      #pic {
+        max-width: 300px;
+        max-height: 300px;
+        width: 40vw;
+        height: 40vw;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="half" id="animation">
+      <script>
+        var canvas, context;
+
+        init();
+        animate();
+        // setInterval(animate, 16);
+
+        function init() {
+
+          canvas = document.createElement( 'canvas' );
+          canvas.width = 400;
+          canvas.height = 300;
+
+          context = canvas.getContext( '2d' );
+
+          document.querySelector('#animation').appendChild( canvas );
+
+        }
+
+        function clear() {
+          context.clearRect ( 0 , 0 , canvas.width, canvas.height );
+          context.fill();
+        }
+
+        function animate() {
+
+          requestAnimationFrame( animate );
+          // drawHeart();
+          drawCircle();
+
+        }
+
+        function drawCircle() {
+          var time = new Date().getTime() * 0.002;
+          var x = Math.sin( time );
+
+          var y = Math.cos( time );
+          var x2 = Math.pow(x,2);
+
+          // draw a clock?
+
+          context.fillStyle = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')';
+
+          // context.fillStyle = 'rgb(0,0,0)';
+
+          context.beginPath();
+          context.arc( x * 96 + 128, 160 - (y * 96), 10, 0, Math.PI * 2, true );
+          context.closePath();
+          context.fill();
+        };
+
+        function drawHeart() {
+
+          var time = new Date().getTime() * 0.002;
+          var x = Math.sin( time );
+          var x2 = Math.pow(x,2);
+
+          context.fillStyle = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')';
+          context.beginPath();
+
+          var y = Math.sqrt(1 - x2) + Math.pow(x2,(1/3));
+          context.arc( x * 96 + 128, 160 - (y * 96), 10, 0, Math.PI * 2, true );
+          
+          y = Math.pow(x2,(1/3)) - Math.sqrt(1 - x2);
+          context.arc( x * 96 + 128, 160 - (y * 96), 10, 0, Math.PI * 2, true );
+          context.closePath();
+          context.fill();
+
+        }</script>
+      <p>Inspired by: <a href="http://mrdoob.com/lab/javascript/requestanimationframe/">Mr. Doob</a>.</p>
+    </div>
+    <div class="half" id="image-manip">
+      <button id="manip">Manipulate Image</button>
+      <button id="revert">Revert Image</button>
+      <canvas id="pic"></canvas>
+      <script>
+        var bm = document.querySelector('button#manip');
+        var br = document.querySelector('button#revert');
+
+        var imWorker = new Worker("scripts/imageManip.js");
+        // imWorker.postMessage(window);
+
+        imWorker.onmessage = function(e) {
+          console.log(e.data)
+        };
+
+        bm.onclick = function() {
+          clear();
+          imWorker.postMessage({render: true})
+        };
+        br.onclick = function() {
+          Caman('#pic', function() {
+            this.reset();
+          })
+        };
+        Caman("#pic", "images/chrome.png", function () {
+          this.render();
+        });
+      </script>
+    </div>
+  </body>
+</html>

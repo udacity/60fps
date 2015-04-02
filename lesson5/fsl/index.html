@@ -1,0 +1,62 @@
+<head>
+  <title>Forced Synchronous Layouts</title>
+  <style>
+    div {
+      display: inline-block;
+      border: solid 1px black;  
+      margin: 10px;
+      height: 30px;
+      background-color: #DDD;
+    }
+  </style>
+</head>
+<body>
+  <button id="cm">Click me</button>
+  <script>
+    // making boxes!!!
+    var i = 0;
+    while (i < 101) {
+      var div = document.createElement('div');
+      div.innerHTML = "hi!";
+      document.body.appendChild(div);
+      i+=1;
+    }
+  </script>
+  <script>
+    var cm = document.querySelector('#cm');
+
+    cm.onclick = makeFSL2;
+
+    function makeFSL() {
+      var divs = getDOMArray('div');
+      divs.forEach(function(elem, index, arr) {
+        if (elem.offsetWidth < 500) {
+          elem.style.maxWidth = '400px';
+        }
+      })
+    };
+
+    function makeFSL2() {
+      var divs = getDOMArray('div');
+      divs.forEach(function(elem, index, arr) {
+        if (window.scrollY < 200) {
+          elem.style.opacity = 0.5;
+          // elem.innerText = "bye";
+        }
+      })
+    };
+
+    // helper function to get an iterable array of DOM nodes because I like using forEach
+    function getDOMArray(selector) {
+
+      // get the elements as a DOM collection
+      var elemCollection = document.querySelectorAll(selector);
+
+      // coerce the DOM collection into an array
+      var elemArray = Array.prototype.slice.apply(elemCollection);
+      
+      return elemArray;
+    };
+
+  </script>
+</body>

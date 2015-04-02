@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+
+<!--
+Canvas inspired by Mr. Doob's example:
+http://mrdoob.com/lab/javascript/requestanimationframe/
+-->
+
+<html lang="en">
+  <head>
+    <title>RequestAnimationFrame example</title>
+  </head>
+  <body>
+    <script>
+
+      var canvas, context;
+
+      init();
+      animate();
+      // setInterval(animate, 16);
+
+      function init() {
+
+        canvas = document.createElement( 'canvas' );
+        canvas.width = 400;
+        canvas.height = 400;
+
+        context = canvas.getContext( '2d' );
+
+        document.body.appendChild( canvas );
+
+      }
+
+      function animate() {
+
+        requestAnimationFrame( animate );
+        draw();
+
+      }
+
+      function draw() {
+
+        var time = new Date().getTime() * 0.002;
+        var x = Math.sin( time );
+        var x2 = Math.pow(x,2);
+
+        context.fillStyle = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')';
+        context.beginPath();
+
+        var y = Math.sqrt(1 - x2) + Math.pow(x2,(1/3));
+        context.arc( x * 96 + 128, 160 - (y * 96), 10, 0, Math.PI * 2, true );
+        
+        y = Math.pow(x2,(1/3)) - Math.sqrt(1 - x2);
+        context.arc( x * 96 + 128, 160 - (y * 96), 10, 0, Math.PI * 2, true );
+        context.closePath();
+        context.fill();
+
+      }
+
+
+
+    </script>
+
+    <div style="width:256px">
+      Inspired by: <a href="http://mrdoob.com/lab/javascript/requestanimationframe/">Mr. Doob</a>.
+    </div>
+  </body>
+</html>
