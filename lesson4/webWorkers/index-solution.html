@@ -1,27 +1,10 @@
 <!DOCTYPE HTML>
-
-<!--
-Canvas inspired by Mr. Doob's example:
-http://mrdoob.com/lab/javascript/requestanimationframe/
--->
-
-<!--
-
-  IDEAS:
-    * line up animation and image side by side
-    * controls for the image manipulation
-    * turn the circle into a 5 second clock. use hands.
-    * ability to upload image
-
--->
-
 <html lang="en">
   <head>
     <title>Web Workers example</title>
-    <script src='CamanJS-4.1.1/dist/caman.full.min.js'></script>
     <style>
       body {
-        width: 100vw;
+        margin: 5px;
       }
       .half {
         width: 50%;
@@ -33,6 +16,17 @@ http://mrdoob.com/lab/javascript/requestanimationframe/
         width: 40vw;
         height: 40vw;
       }
+      .box {
+        display: inline-block;
+        border: solid 1px black;  
+        margin: 10px;
+        height: 30px;
+        padding: 5px;
+        background-color: #DDD;
+      }
+      #image {
+        width: 100%;
+      }
     </style>
   </head>
   <body>
@@ -41,101 +35,171 @@ http://mrdoob.com/lab/javascript/requestanimationframe/
         var canvas, context;
 
         init();
-        animate();
-        // setInterval(animate, 16);
+        setInterval(animate, 16);
 
         function init() {
-
           canvas = document.createElement( 'canvas' );
           canvas.width = 400;
           canvas.height = 300;
-
           context = canvas.getContext( '2d' );
-
           document.querySelector('#animation').appendChild( canvas );
-
-        }
-
-        function clear() {
-          context.clearRect ( 0 , 0 , canvas.width, canvas.height );
-          context.fill();
         }
 
         function animate() {
-
-          requestAnimationFrame( animate );
-          // drawHeart();
-          drawCircle();
-
+          drawTime();
         }
 
-        function drawCircle() {
-          var time = new Date().getTime() * 0.002;
-          var x = Math.sin( time );
+        var lastTime;
 
-          var y = Math.cos( time );
-          var x2 = Math.pow(x,2);
+        function drawTime() {
+          var days = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+          ]
 
-          // draw a clock?
+          var months = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+          ]
 
-          context.fillStyle = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')';
 
-          // context.fillStyle = 'rgb(0,0,0)';
+          var now = new Date(Date.now());
 
-          context.beginPath();
-          context.arc( x * 96 + 128, 160 - (y * 96), 10, 0, Math.PI * 2, true );
-          context.closePath();
-          context.fill();
+          var year = now.getYear();
+          var month = now.getMonth();
+          var date = now.getDate();
+          var day = now.getDay();
+          var hours = now.getHours();
+          var mins = now.getMinutes();
+          var secs = now.getSeconds();
+          var ms = now.getMilliseconds();
+
+          var dateString = days[day] + ", " + date + " " + months[month] + " " + parseInt(1900 + year);
+
+          var timeString = hours + ":" + mins + ":" + secs + ":" + ms;
+
+          var frameTimeDiff = now - lastTime;
+
+          context.font = "36px serif";
+
+          if (frameTimeDiff > 50) {
+            context.clearRect(0,0, canvas.width, canvas.height);
+            context.fillText("Jank spotted: " + frameTimeDiff + "ms", 20, 50);
+          } else {
+            context.clearRect(20,60,canvas.width, canvas.height);
+          }
+
+          context.fillText(dateString, 20, 100);
+          context.fillText(timeString, 20, 150);
+
+          lastTime = now;
         };
-
-        function drawHeart() {
-
-          var time = new Date().getTime() * 0.002;
-          var x = Math.sin( time );
-          var x2 = Math.pow(x,2);
-
-          context.fillStyle = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')';
-          context.beginPath();
-
-          var y = Math.sqrt(1 - x2) + Math.pow(x2,(1/3));
-          context.arc( x * 96 + 128, 160 - (y * 96), 10, 0, Math.PI * 2, true );
-          
-          y = Math.pow(x2,(1/3)) - Math.sqrt(1 - x2);
-          context.arc( x * 96 + 128, 160 - (y * 96), 10, 0, Math.PI * 2, true );
-          context.closePath();
-          context.fill();
-
-        }</script>
-      <p>Inspired by: <a href="http://mrdoob.com/lab/javascript/requestanimationframe/">Mr. Doob</a>.</p>
-    </div>
-    <div class="half" id="image-manip">
-      <button id="manip">Manipulate Image</button>
-      <button id="revert">Revert Image</button>
-      <canvas id="pic"></canvas>
-      <script>
-        var bm = document.querySelector('button#manip');
-        var br = document.querySelector('button#revert');
-
-        var imWorker = new Worker("scripts/imageManip.js");
-        // imWorker.postMessage(window);
-
-        imWorker.onmessage = function(e) {
-          console.log(e.data)
-        };
-
-        bm.onclick = function() {
-          clear();
-          imWorker.postMessage({render: true})
-        };
-        br.onclick = function() {
-          Caman('#pic', function() {
-            this.reset();
-          })
-        };
-        Caman("#pic", "images/chrome.png", function () {
-          this.render();
-        });
       </script>
     </div>
+    <div class="half" id="image-manipulator">
+      <input type="file" id="imageLoader" name="imageLoader"/>
+      <button id="invert">Invert</button>
+      <button id="chroma">Chroma</button>
+      <button id="greyscale">Greyscale</button>
+      <button id="vibrant">Vibrant</button>
+      <button id="revert">Revert to Original</button>
+      <canvas id="image"></canvas>
+    </div>
+    <script>
+      // Generated by CoffeeScript 1.9.1
+      // forked from github.com/jwill/psychic-lana
+      // with help from http://stackoverflow.com/questions/10906734/how-to-upload-image-into-html5-canvas
+
+      var original;
+      var imageLoader = document.querySelector('#imageLoader');
+      imageLoader.addEventListener('change', handleImage, false);
+      var canvas = document.querySelector('#image');
+      var ctx = canvas.getContext('2d');
+
+      var imageWorker = new Worker('scripts/worker.js');
+
+      function handleImage(e){
+        var reader = new FileReader();
+        reader.onload = function(event){
+          var img = new Image();
+          img.onload = function(){
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img,0,0);
+            original = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          }
+          img.src = event.target.result;
+        }
+        reader.readAsDataURL(e.target.files[0]);
+      }
+
+      function toggleButtonsAbledness() {
+        var buttons = document.querySelectorAll('button');
+        for (var i = 0; i < buttons.length; i++) {
+          if (buttons[i].hasAttribute('disabled')) {
+            buttons[i].removeAttribute('disabled')
+          } else {
+            buttons[i].setAttribute('disabled', null);
+          }
+        };
+      }
+
+      function manipulateImage(type) {
+        var a, b, g, i, imageData, j, length, pixel, r, ref;
+        imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        toggleButtonsAbledness();
+        imageWorker.postMessage({"imageData": imageData, "type": type});
+
+        imageWorker.onmessage = function(e) {
+          toggleButtonsAbledness();
+          var image = e.data;
+          if (image) return ctx.putImageData(e.data, 0, 0);
+          console.log("No manipulated image returned.")
+        }
+
+        imageWorker.onerror = function(error) {
+          function WorkerException(message) {
+            this.name = "WorkerException";
+            this.message = message;
+          };
+          throw new WorkerException('Worker error.');
+        };
+      };
+
+      function revertImage() {
+        return ctx.putImageData(original, 0, 0);
+      }
+
+      document.querySelector('#invert').onclick = function() {
+        manipulateImage("invert");
+      };
+      document.querySelector('#chroma').onclick = function() {
+        manipulateImage("chroma");
+      };
+      document.querySelector('#greyscale').onclick = function() {
+        manipulateImage("greyscale");
+      };
+      document.querySelector('#vibrant').onclick = function() {
+        manipulateImage("vibrant");
+      };
+      document.querySelector('#revert').onclick = function() {
+        revertImage();
+      };
+    </script>
   </body>
 </html>
