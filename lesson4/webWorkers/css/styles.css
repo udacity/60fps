@@ -19,7 +19,6 @@ img.udacity {
 }
 .half {
   width: 50%;
-  float: left;
   display: wrap;
 }
 #pic {

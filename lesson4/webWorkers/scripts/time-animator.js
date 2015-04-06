@@ -1,5 +1,4 @@
 (function(){
-
   var canvas, context;
 
   init();
@@ -13,11 +12,13 @@
     document.querySelector('#time-animation').appendChild( canvas );
   }
 
+  // rAFing animation() in the event that more than the timer needs to be drawn
   function animate() {
     drawTime();
     requestAnimationFrame(animate);
   }
 
+  // vars needed to compare diffs between frames
   var lastDiff = 0;
   var lastTime = 0;
   var displayTime = 0;
@@ -62,10 +63,20 @@
     var secs = now.getSeconds();
     var ms = now.getMilliseconds();
 
-    var dateString = days[day] + ", " + date + " " + months[month] + " " + parseInt(1900 + year);
+    // add some zeros to keep time strings the same length
+    if (hours < 10) hours = "0" + hours;
+    if (mins < 10) mins = "0" + mins;
+    if (secs < 10) secs = "0" + secs;
+    if (ms < 10) {
+      ms = "00" + ms;
+    } else if (ms < 100 && ms >= 10) {
+      ms = "0" + ms;
+    }
 
+    var dateString = days[day] + ", " + date + " " + months[month] + " " + parseInt(1900 + year);
     var timeString = hours + ":" + mins + ":" + secs + ":" + ms;
     
+    // calc the time diff between frames, starting with the second frame
     if (lastTime > 0) {
       frameTimeDiff = now - lastTime;
     } else {
@@ -73,6 +84,7 @@
     }
 
     // threshold for shown jank is >50ms
+    // mark time when the jank occured
     if (frameTimeDiff > lastDiff && frameTimeDiff > 50) {
       displayTime = frameTimeDiff;
       changeTime = now;
@@ -81,13 +93,12 @@
 
     context.clearRect(0,0, canvas.width, canvas.height);
 
-
     context.font = '24px sans-serif';
     context.fillStyle = 'rgba(41,72,96,1)';
     context.fillText("Date: " + dateString, 0, 50);
     context.fillText("Time: " + timeString, 0, 75);
 
-    // fade out the "Jank Spotted" timer
+    // fade out the "Jank Spotted" timer after 5 secs
     if (changeTime !== 0 && now - changeTime > 5000 && alpha > 0) {
       alpha = alpha - 0.05;
     }
@@ -98,6 +109,7 @@
       context.fillText("Jank spotted: " + displayTime + "ms", 0, 125);
     }
 
+    // save the data about this frame for future comparison
     lastTime = now;
     lastDiff = frameTimeDiff;
   };

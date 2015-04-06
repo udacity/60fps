@@ -26,6 +26,4 @@ this.onmessage = function(e) {
     throw new InverterException('Image manipulation error');
     postMessage(undefined);
   }
-
 }
-
