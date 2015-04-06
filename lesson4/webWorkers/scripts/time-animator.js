@@ -21,6 +21,8 @@
   var lastDiff = 0;
   var lastTime = 0;
   var displayTime = 0;
+  var alpha = 1;
+  var changeTime = 0;
 
   function drawTime() {
 
@@ -63,23 +65,38 @@
     var dateString = days[day] + ", " + date + " " + months[month] + " " + parseInt(1900 + year);
 
     var timeString = hours + ":" + mins + ":" + secs + ":" + ms;
-
+    
     if (lastTime > 0) {
       frameTimeDiff = now - lastTime;
     } else {
       frameTimeDiff = null;
     }
 
-    if ( frameTimeDiff > lastDiff && frameTimeDiff > 50 ) displayTime = frameTimeDiff;
-
-    context.font = '36px serif';
-    context.fillStyle = 'rgba(41,72,96,1)';
+    // threshold for shown jank is >50ms
+    if (frameTimeDiff > lastDiff && frameTimeDiff > 50) {
+      displayTime = frameTimeDiff;
+      changeTime = now;
+      alpha = 1;
+    }
 
     context.clearRect(0,0, canvas.width, canvas.height);
 
-    if (displayTime > 0) context.fillText("Jank spotted: " + displayTime + "ms", 0, 50);
-    context.fillText(dateString, 0, 100);
-    context.fillText(timeString, 0, 150);
+
+    context.font = '24px sans-serif';
+    context.fillStyle = 'rgba(41,72,96,1)';
+    context.fillText("Date: " + dateString, 0, 50);
+    context.fillText("Time: " + timeString, 0, 75);
+
+    // fade out the "Jank Spotted" timer
+    if (changeTime !== 0 && now - changeTime > 5000 && alpha > 0) {
+      alpha = alpha - 0.05;
+    }
+
+    context.font = '36px sans-serif';
+    context.fillStyle = 'rgba(41,72,96,' + alpha + ')';
+    if (displayTime > 0) {
+      context.fillText("Jank spotted: " + displayTime + "ms", 0, 125);
+    }
 
     lastTime = now;
     lastDiff = frameTimeDiff;
