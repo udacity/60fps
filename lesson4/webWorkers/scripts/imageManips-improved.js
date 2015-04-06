@@ -1,5 +1,9 @@
+ // Image manipulation logic from github.com/jwill/psychic-lana
+
 function getManipFunc(type) {
+
   var func = function() {};
+
   function makePixelInverted(r, g, b, a) {
     r = 255 - r;
     g = 255 - g;
@@ -7,7 +11,7 @@ function getManipFunc(type) {
     return [r, g, b, a];
   };
 
-  makePixelChroma = function(r, g, b, a) {
+  function makePixelChroma(r, g, b, a) {
     var max;
     max = Math.max(r, Math.max(g, b));
     if (max === g) {
@@ -17,7 +21,7 @@ function getManipFunc(type) {
     }
   };
 
-  makePixelGreyScale = function(r, g, b, a) {
+  function makePixelGreyScale(r, g, b, a) {
     var y;
     y = (0.3 * r) + (0.59 * g) + (0.11 * b);
     r = y;
@@ -26,7 +30,7 @@ function getManipFunc(type) {
     return [r, g, b, a];
   };
 
-  makePixelVibrant = function(r, g, b, a) {
+  function makePixelVibrant(r, g, b, a) {
     var amt, avg, bs, gs, mx, rs;
     avg = (r + g + b) / 3.0;
     mx = Math.max(r, Math.max(g, b));
