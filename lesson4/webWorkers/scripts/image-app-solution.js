@@ -23,6 +23,8 @@
     reader.readAsDataURL(e.target.files[0]);
   }
 
+  // greys out the buttons while manipulation is happening
+  // un-greys out the buttons when the manipulation is done
   function toggleButtonsAbledness() {
     var buttons = document.querySelectorAll('button');
     for (var i = 0; i < buttons.length; i++) {

@@ -19,8 +19,8 @@ this.onmessage = function(e) {
     }
     postMessage(imageData);
   } catch (e) {
-    function InverterException(message) {
-      this.name = "InverterException";
+    function ManipulatorException(message) {
+      this.name = "ManipulationException";
       this.message = message;
     };
     throw new InverterException('Image manipulation error');

@@ -1,0 +1,1 @@
+http://upload.wikimedia.org/wikipedia/commons/4/42/Loading.gif
