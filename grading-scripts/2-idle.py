@@ -11,8 +11,8 @@ def commentizer(new):
     if new not in comments:
         comments.append(new)
 
-if not news:
-    commentizer("Why not load news stories that could be used in the future?")
+if news:
+    commentizer("People visit the site to see the news, so ideally the stories should already be loaded.")
     is_correct = is_correct and False
 else:
     is_correct = True
