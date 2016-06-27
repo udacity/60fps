@@ -213,13 +213,13 @@ body {
       boxes[b].classList.toggle('middle');
       
       if (!boxes[b].classList.contains('middle')) {
-        boxes[b].style.webkitTransform = makeTransform(b, true);
+        boxes[b].style.transform = makeTransform(b, true);
       }
     }
     
     animating = boxes[0].classList.contains('middle');
    
-    webkitRequestAnimationFrame(update);
+    requestAnimationFrame(update);
   });
     
   function toggleRadiusClass () {
@@ -235,10 +235,10 @@ body {
     
     time += 0.01;
     for (var b = 0; b < boxes.length; b++) {
-      boxes[b].style.webkitTransform = makeTransform(b); 
+      boxes[b].style.transform = makeTransform(b); 
     }
     
-    webkitRequestAnimationFrame(update);
+    requestAnimationFrame(update);
   }
 
   function makeTransform(b, zeroed) {
